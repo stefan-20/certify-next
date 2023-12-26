@@ -5,11 +5,19 @@ import { sql } from '@vercel/postgres';
 import { z } from 'zod';
 import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
- 
+import prisma from './app/lib/prisma';
+import { UserDoesntExistError } from './app/lib/customErrors';
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
-    return user.rows[0];
+    const user = await prisma.user.findUnique({
+      where:{email:email}
+    })
+    if (user){
+
+      return user;
+    }
+    let error = new UserDoesntExistError()
+    throw error
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
