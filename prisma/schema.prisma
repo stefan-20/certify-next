@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model user {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name       String    @db.VarChar(255)
+  email      String    @unique
+  password   String
+  role       user_role @default(user)
+  is_active  Boolean?  @default(true)
+  created_on DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
+
+  created_accreditations accreditation[] @relation("created_accreditation")
+  owned_accreditations accreditation[] @relation("owned_accreditation")
+}
+
+model accreditation {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String    @db.VarChar(255)
+  valid_on    DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
+  valid_until DateTime? 
+  is_active   Boolean?  @default(true)
+  type        accreditation_type @default(certificate) 
+  uploads     upload[]  
+  transactions transaction[] 
+
+  created_on  DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
+  modified_on DateTime? @updatedAt
+
+  creator     user     @relation("created_accreditation",fields:[creator_id],references:[id])
+  creator_id  String   @db.Uuid
+  owner       user     @relation("owned_accreditation",fields:[owner_id],references:[id])
+  owner_id    String   @db.Uuid
+}
+
+model transaction {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  accreditation_id  String            @db.Uuid
+  accreditation     accreditation     @relation(fields:[accreditation_id],references:[id])
+  status            transaction_status  @default(pending)
+}
+
+model upload {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  filename    String    @db.VarChar(255)
+  url         String    @db.VarChar(255)
+  accreditation_id String @db.Uuid
+  accreditation accreditation @relation(fields:[accreditation_id],references:[id] )
+}
+
+
+enum transaction_status {
+  pending
+  completed
+}
+
+enum accreditation_type {
+  certificate
+  attest
+  testimonial
+  reference
+}
+
+enum user_role {
+  user
+  admin
+  guest
+}

@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Progress & Notes
 
-## Getting Started
+### Utility
 
-First, run the development server:
+- seeding script for data table setup [DEFER]
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+  - user [DONE]
+  - accreditations [DONE]
+  - uploads
+  - transactions
+  - notifications
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- add docker compose postgres and adminer (reduce hosting cost) [DONE]
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- add prisma to the project for migrations and query utilities [DONE]
+  - install packages [DONE]
+  - baseline database [DEFER]
+    - > > empty
+  - create basic schema [DONE]
+    - user
+  - create client [DONE]
+  - create migration [DONE]
+  - test query utility for registration page [DONE]
+  - create a global scoped prisma client and module to use throughout app [DONE]
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Functionality
 
-## Learn More
+- replace certify name & logo [DONE]
+- landing page
 
-To learn more about Next.js, take a look at the following resources:
+  - adjust text for certify [DONE]
+  - add register button [DONE]
+  - adjust image [DEFER]
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- user flow [DONE]
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+  - create data model for user [DONE]
+    - > > definitions.ts [DONE]
+  - create registration page ui [DONE]
+    - add login link with redirect [DONE]
+    - add Name field [DONE]
+    - add confirmPassword field [DONE]
+  - create actions for registration
+    - compare passwords [DONE]
+      - raise error if not match [DONE]
+    - check if user exists [DONE]
+    - create user [DONE]
+    - show successful creation [DEFER]
+    - redirect to login [DONE]
+  - seed table with certify_user table [DONE]
+  - hook up ui with login [DONE]
+    - add registration link to login [DONE]
+  - migrate login and auth to prisma [DONE]
+    - added UserDoesntExist error [DONE]
 
-## Deploy on Vercel
+- create accreditation flow
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+  - add accreditation schema [DONE]
+    - added upload [DONE]
+    - added transaction [DONE]
+    - added enum for accreditation_type [DONE]
+    - added enum for transaction_status [DONE]
+  - fix accreditation page
+    - update page wording [DONE]
+      - update search input ui [DONE]
+  - update table
+    - update layout []
+    - update search function []
+      - access session/cookie to get user []
+      - migrate accreditation query to user []

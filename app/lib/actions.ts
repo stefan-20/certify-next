@@ -6,6 +6,9 @@ import { sql } from '@vercel/postgres'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { PasswordMismatchError, UserExistsError } from './customErrors'
+import bcrypt from 'bcrypt';
+import prisma from './prisma'
 const FormSchema = z.object({
     id: z.string(),
     customerId: z.string({invalid_type_error:'Please select a customer.'}),
@@ -114,6 +117,63 @@ export async function authenticate(
 ){
   try{
     await signIn('credentials', formData);
+  } catch(error){
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    throw error;
+  }
+}
+
+
+export async function register(
+  prevState: string|undefined,
+  formData: FormData
+){
+  try{
+
+    const name = formData.get('name')?.toString()!
+    const email = formData.get('email')?.toString()!
+    const password = formData.get('password')?.toString()!
+    const confirmPassword = formData.get('confirmPassword')?.toString()!
+    // Check if passwords match
+    if (password!==confirmPassword) {
+      let error = new PasswordMismatchError()
+      return error.message
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: {
+        email:email
+      }
+    })
+    if (user){
+      let error = new UserExistsError()
+      return error.message
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const response = await prisma.user.create({
+      data: {
+        email: email,
+        name: name,
+        password: hashedPassword
+      },
+    }) 
+    console.log(response)
+    redirect('/login')
+    return {
+      status: 'success',
+      message: `Successfully created a user for the email: ${email}.`
+    }
+
   } catch(error){
     if (error instanceof AuthError) {
       switch (error.type) {

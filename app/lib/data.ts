@@ -11,6 +11,7 @@ import {
 import { formatCurrency } from './utils';
 
 import { unstable_noStore as noStore } from 'next/cache';
+import prisma from './prisma';
 
 export async function fetchRevenue() {
   // Add noStore() here prevent the response from being cached.
@@ -89,8 +90,10 @@ export async function fetchCardData() {
   }
 }
 
+import { getToken } from "next-auth/jwt"
+
 const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredInvoices(
+export async function fetchFilteredAccreditations(
   query: string,
   currentPage: number,
   ) {
@@ -98,6 +101,12 @@ export async function fetchFilteredInvoices(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
+
+    // Get user from jwt
+    const token = await getToken({ req, secret })
+    console.log("JSON Web Token", token)
+
+    const results = await prisma.accreditation.findMany()
     const invoices = await sql<InvoicesTable>`
       SELECT
         invoices.id,

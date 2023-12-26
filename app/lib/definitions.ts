@@ -7,7 +7,60 @@ export type User = {
   name: string;
   email: string;
   password: string;
+  is_active: boolean;
+  created_on: string;
 };
+
+export type Upload = {
+  id: string;
+  url: string;
+}
+
+export type Accreditation = {
+  id: string;
+  name: string;
+  summary: string;
+  upload_id: string;
+  type: 'certificate' | 'testimonial' | 'review';
+  valid_on: string;
+  valid_until: string;
+  is_active: boolean;
+
+  created_by_id: string;
+  owned_by_id: string;
+  created_on: string;
+  modified_on: string;
+}
+
+export type Transaction = {
+  id: string;
+  from_id: string;
+  to_id: string;
+  accred_id: string;
+  status: 'pending' | 'confirmed' | 'rejected';
+
+  created_on: string;
+}
+export type Request = {
+  id: string;
+  ref_id: string;
+  to_id: string;
+  accred_id: string;
+  type: 'change' | 'approval' | 'accreditation';
+  status: 'pending' | 'closed';
+
+  created_by_id: string;
+  created_on: string;
+}
+
+export type Notification = {
+  id: string;
+  target_id: string;
+  ref_id: string;
+  name: string;
+  content: string;
+  created_on: string;
+}
 
 export type Customer = {
   id: string;

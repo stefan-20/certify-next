@@ -1,6 +1,6 @@
 const { db } = require('@vercel/postgres');
 const {
-  invoices,
+  Accreditations,
   customers,
   revenue,
   users,
@@ -11,12 +11,15 @@ async function seedUsers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     // Create the "users" table if it doesn't exist
+
     const createTable = await client.sql`
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE IF NOT EXISTS certify_users (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        is_active BOOLEAN DEFAULT True,
+        created_on TIMESTAMP DEFAULT (now() at time zone 'utc')
       );
     `;
 
@@ -27,8 +30,8 @@ async function seedUsers(client) {
       users.map(async (user) => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+        INSERT INTO certify_users (name, email, password)
+        VALUES (${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
       }),
@@ -46,127 +49,150 @@ async function seedUsers(client) {
   }
 }
 
-async function seedInvoices(client) {
-  try {
-    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+// async function seedUploads(client) {
+//   try {
+//     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-    // Create the "invoices" table if it doesn't exist
-    const createTable = await client.sql`
-    CREATE TABLE IF NOT EXISTS invoices (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    customer_id UUID NOT NULL,
-    amount INT NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
-  );
-`;
+//     const createTable = await client.sql`
+//       CREATE TABLE IF NOT EXISTS certify_uploads (
+//         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+//         url VARCHAR(255) NOT NULL,
+//       );
+//     `;
 
-    console.log(`Created "invoices" table`);
+//     console.log(`Created "users" table`);
 
-    // Insert data into the "invoices" table
-    const insertedInvoices = await Promise.all(
-      invoices.map(
-        (invoice) => client.sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
-        ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
-    );
+//     return {
+//       createTable,
+//     };
+//   } catch (error) {
+//     console.error('Error seeding users:', error);
+//     throw error;
+//   }
+// }
 
-    console.log(`Seeded ${insertedInvoices.length} invoices`);
+// async function seedTransactions(client) {
+//   try {
+//     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+//     // Create the "users" table if it doesn't exist
 
-    return {
-      createTable,
-      invoices: insertedInvoices,
-    };
-  } catch (error) {
-    console.error('Error seeding invoices:', error);
-    throw error;
-  }
-}
+//     // Check: created_on
 
-async function seedCustomers(client) {
-  try {
-    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+//     const createTable = await client.sql`
+//       CREATE TABLE IF NOT EXISTS certify_transactions (
+//         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
 
-    // Create the "customers" table if it doesn't exist
-    const createTable = await client.sql`
-      CREATE TABLE IF NOT EXISTS customers (
-        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        image_url VARCHAR(255) NOT NULL
-      );
-    `;
+//         url VARCHAR(255) NOT NULL,
+//       );
+//     `;
 
-    console.log(`Created "customers" table`);
+//     console.log(`Created "users" table`);
 
-    // Insert data into the "customers" table
-    const insertedCustomers = await Promise.all(
-      customers.map(
-        (customer) => client.sql`
-        INSERT INTO customers (id, name, email, image_url)
-        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
-        ON CONFLICT (id) DO NOTHING;
-      `,
-      ),
-    );
+//     // Insert data into the "users" table
+//     const insertedUsers = await Promise.all(
+//       users.map(async (user) => {
+//         const hashedPassword = await bcrypt.hash(user.password, 10);
+//         return client.sql`
+//         INSERT INTO certify_users (id, name, email, password)
+//         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+//         ON CONFLICT (id) DO NOTHING;
+//       `;
+//       }),
+//     );
 
-    console.log(`Seeded ${insertedCustomers.length} customers`);
+//     console.log(`Seeded ${insertedUsers.length} users`);
 
-    return {
-      createTable,
-      customers: insertedCustomers,
-    };
-  } catch (error) {
-    console.error('Error seeding customers:', error);
-    throw error;
-  }
-}
+//     return {
+//       createTable,
+//       users: insertedUsers,
+//     };
+//   } catch (error) {
+//     console.error('Error seeding users:', error);
+//     throw error;
+//   }
+// }
+// async function seedNotifications(client) {
+//   try {
+//     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+//     // Create the "users" table if it doesn't exist
 
-async function seedRevenue(client) {
-  try {
-    // Create the "revenue" table if it doesn't exist
-    const createTable = await client.sql`
-      CREATE TABLE IF NOT EXISTS revenue (
-        month VARCHAR(4) NOT NULL UNIQUE,
-        revenue INT NOT NULL
-      );
-    `;
+//     // Check: created_on
 
-    console.log(`Created "revenue" table`);
+//     const createTable = await client.sql`
+//       CREATE TABLE IF NOT EXISTS certify_uploads (
+//         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+//         url VARCHAR(255) NOT NULL,
+//       );
+//     `;
 
-    // Insert data into the "revenue" table
-    const insertedRevenue = await Promise.all(
-      revenue.map(
-        (rev) => client.sql`
-        INSERT INTO revenue (month, revenue)
-        VALUES (${rev.month}, ${rev.revenue})
-        ON CONFLICT (month) DO NOTHING;
-      `,
-      ),
-    );
+//     console.log(`Created "users" table`);
 
-    console.log(`Seeded ${insertedRevenue.length} revenue`);
+//     // Insert data into the "users" table
+//     const insertedUsers = await Promise.all(
+//       users.map(async (user) => {
+//         const hashedPassword = await bcrypt.hash(user.password, 10);
+//         return client.sql`
+//         INSERT INTO certify_users (id, name, email, password)
+//         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+//         ON CONFLICT (id) DO NOTHING;
+//       `;
+//       }),
+//     );
 
-    return {
-      createTable,
-      revenue: insertedRevenue,
-    };
-  } catch (error) {
-    console.error('Error seeding revenue:', error);
-    throw error;
-  }
-}
+//     console.log(`Seeded ${insertedUsers.length} users`);
+
+//     return {
+//       createTable,
+//       users: insertedUsers,
+//     };
+//   } catch (error) {
+//     console.error('Error seeding users:', error);
+//     throw error;
+//   }
+// }
+
+// async function seedAccreditations(client) {
+//   try {
+//     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+//     // Create the "Accreditations" table if it doesn't exist
+//     const createTable = await client.sql`
+//         CREATE TABLE IF NOT EXISTS certify_accreditations (
+//         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+//         name TEXT NOT NULL,
+//         summary TEXT,
+//         upload_id UUID,
+//         type VARCHAR(255) NOT NULL,
+//         valid_on TIMESTAMP DEFAULT (now() at time zone 'utc'),
+//         valid_until TIMESTAMP,
+
+//         is_active BOOLEAN DEFAULT True,
+//         created_by_id UUID NOT NULL REFERENCES certify_users(id),
+//         owned_by_id UUID NOT NULL REFERENCES certify_users(id),
+//         created_on TIMESTAMP DEFAULT (now() at time zone 'utc')
+//         modified_on TIMESTAMP DEFAULT (now() at time zone 'utc')
+
+//       );
+//     `;
+
+//     console.log(`Created "Accreditations" table`);
+
+//     return {
+//       createTable,
+//     };
+//   } catch (error) {
+//     console.error('Error seeding Accreditations:', error);
+//     throw error;
+//   }
+// }
 
 async function main() {
   const client = await db.connect();
 
   await seedUsers(client);
-  await seedCustomers(client);
-  await seedInvoices(client);
-  await seedRevenue(client);
+  // await seedCustomers(client);
+  // await seedAccreditations(client);
+  // await seedRevenue(client);
 
   await client.end();
 }
