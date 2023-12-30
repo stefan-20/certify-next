@@ -33,7 +33,7 @@ const options = {
   inputNameProp: 'date',
   inputIdProp: 'date',
   inputPlaceholderProp: 'Select Date',
-  inputDateFormatProp: 'yyyy-mm-dd',
+  // inputDateFormatProp: 'yyyy-mm-dd',
   // inputDateFormatProp: {
   //   day: 'numeric',
   //   month: 'numeric',
