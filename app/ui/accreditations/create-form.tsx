@@ -31,7 +31,7 @@ export default function Form({
             htmlFor="accreditation"
             className="mb-2 block text-sm font-medium"
           >
-            Enter a name <span className="text-red-500">*</span>
+            Name <span className="text-red-500">*</span>
           </label>
           <div className="">
             <input
@@ -49,7 +49,7 @@ export default function Form({
             htmlFor="description"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Enter a description
+            Description
           </label>
           <div className="">
             <textarea
@@ -103,7 +103,7 @@ export default function Form({
             htmlFor="accreditationType"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Select type
+            Type
           </label>
           <div className="relative">
             <select
@@ -139,7 +139,7 @@ export default function Form({
               htmlFor="valid_from"
               className="mb-2 block text-sm font-medium"
             >
-              Valid from
+              Valid from <span className="text-red-500">*</span>
             </label>
             <div>
               <DatePicker

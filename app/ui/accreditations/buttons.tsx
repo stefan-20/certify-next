@@ -3,6 +3,7 @@ import {
   PlusIcon,
   TrashIcon,
   PaperAirplaneIcon,
+  DocumentIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -25,6 +26,17 @@ export function UpdateAccreditation({ id }: { id: string }) {
       className="rounded-md border p-2 hover:bg-gray-100"
     >
       <PencilIcon className="w-5" />
+    </Link>
+  );
+}
+export function ViewAccreditation({ id }: { id: string }) {
+  return (
+    <Link
+      href={`/dashboard/accreditations/${id}/view`}
+      // pointer-events needs to be removed to activate
+      className="pointer-events-none rounded-md border p-2 hover:bg-gray-100"
+    >
+      <DocumentIcon className="w-5" />
     </Link>
   );
 }

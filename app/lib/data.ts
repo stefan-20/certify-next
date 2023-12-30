@@ -1,3 +1,4 @@
+'use server'
 import { sql } from '@vercel/postgres';
 import {
   CustomersTableType,
@@ -126,6 +127,36 @@ export async function fetchNontransactedAccreditations(){
     throw new Error('Failed to fetch accreditations.');
   }
 }
+
+export async function fetchValidationAccreditationsByUserID(id:string){
+  try {
+
+    // Get user from jwt and check if he is allowed to view (TODO)
+    const token = await auth()
+    const idUser = token?.user?.id
+    
+    const results_user = await prisma.user.findUnique({
+      where:{id:id},
+      include:{
+        owned_accreditations:{
+          include: {
+            creator:
+              {select:{name:true}}
+          }
+        }
+      }
+    })
+    console.log(results_user)
+    console.log(results_user?.owned_accreditations)
+    return results_user?.owned_accreditations
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch accreditations.');
+  }
+}
+
+
+
 
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredAccreditations(
@@ -306,39 +337,6 @@ export async function fetchAccreditationTypes() {
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
-  noStore()
-  try {
-    const data = await sql<CustomersTableType>`
-		SELECT
-		  customers.id,
-		  customers.name,
-		  customers.email,
-		  customers.image_url,
-		  COUNT(invoices.id) AS total_invoices,
-		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-		FROM customers
-		LEFT JOIN invoices ON customers.id = invoices.customer_id
-		WHERE
-		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
-		ORDER BY customers.name ASC
-	  `;
-
-    const customers = data.rows.map((customer) => ({
-      ...customer,
-      total_pending: formatCurrency(customer.total_pending),
-      total_paid: formatCurrency(customer.total_paid),
-    }));
-
-    return customers;
-  } catch (err) {
-    console.error('Database Error:', err);
-    throw new Error('Failed to fetch customer table.');
-  }
-}
 
 export async function getUser(email: string) {
   noStore()
@@ -348,5 +346,23 @@ export async function getUser(email: string) {
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
+  }
+}
+
+
+
+export async function getOptions(query: string) {
+  try {
+    const results = await prisma.user.findMany({
+      where:{
+        email : {contains:query, mode:'insensitive'}
+      }
+    })
+
+    console.log(results)
+    return []
+  } catch (error) {
+    console.error('Failed to fetch options:', error);
+    throw new Error('Failed to fetch options.');
   }
 }
