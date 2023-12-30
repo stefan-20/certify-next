@@ -8,8 +8,8 @@ import { fetchUsers } from '@/app/lib/data';
 import Select from 'react-select';
 
 export default function Page() {
-  const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState({
+  const [options, setOptions] = useState<any | null>([]);
+  const [selectedOption, setSelectedOption] = useState<any | null>({
     label: 'Email',
     value: null,
   });

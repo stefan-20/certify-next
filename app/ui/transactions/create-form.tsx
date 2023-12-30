@@ -20,8 +20,8 @@ export default function Form({
   accreditations,
   users,
 }: {
-  accreditations: [];
-  users: [];
+  accreditations: any;
+  users: any;
 }) {
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useFormState(createTransaction, initialState);
