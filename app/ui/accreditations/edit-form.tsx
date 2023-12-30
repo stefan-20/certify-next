@@ -20,7 +20,7 @@ export default function EditAccreditationForm({
   accreditation,
   accreditationTypes,
 }: {
-  accreditation: AccreditationForm;
+  accreditation: any;
   accreditationTypes: [];
 }) {
   const initialState = { message: null, errors: {} };

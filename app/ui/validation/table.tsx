@@ -3,7 +3,7 @@ import { ViewAccreditation } from '@/app/ui/accreditations/buttons';
 export default async function ValidationTable({
   accreditations,
 }: {
-  accreditations: [];
+  accreditations: any;
 }) {
   return (
     <div className="mt-6 flow-root">
