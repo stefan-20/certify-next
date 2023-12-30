@@ -16,19 +16,24 @@ model user {
   is_active  Boolean?  @default(true)
   created_on DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
 
-  created_accreditations accreditation[] @relation("created_accreditation")
-  owned_accreditations accreditation[] @relation("owned_accreditation")
+  created_accreditations  accreditation[] @relation("created_accreditation")
+  owned_accreditations    accreditation[] @relation("owned_accreditation")
+  transaction_target      transaction[]   @relation("to_transaction")
+  transaction_owner       transaction[] @relation("from_transaction")
 }
 
 model accreditation {
   id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   name        String    @db.VarChar(255)
+  description String?   @default("") @db.VarChar(255)
   valid_on    DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
   valid_until DateTime? 
   is_active   Boolean?  @default(true)
   type        accreditation_type @default(certificate) 
   uploads     upload[]  
   transactions transaction[] 
+
+  last_transaction_status transaction_status? 
 
   created_on  DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
   modified_on DateTime? @updatedAt
@@ -41,9 +46,14 @@ model accreditation {
 
 model transaction {
   id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  accreditation_id  String            @db.Uuid
-  accreditation     accreditation     @relation(fields:[accreditation_id],references:[id])
+  accreditation_id  String              @db.Uuid
+  accreditation     accreditation       @relation(fields:[accreditation_id],references:[id])
   status            transaction_status  @default(pending)
+  from              user                @relation("from_transaction",fields:[from_id],references:[id])
+  from_id           String              @db.Uuid
+  to                user                @relation("to_transaction",fields:[to_id],references:[id])
+  to_id             String              @db.Uuid
+  created_on        DateTime?           @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamp(6)
 }
 
 model upload {

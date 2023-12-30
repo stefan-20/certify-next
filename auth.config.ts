@@ -16,7 +16,19 @@ export const authConfig = {
                 return Response.redirect(new URL('/dashboard', nextUrl))
             }
             return true
+        },
+        async jwt({token, user, account, profile, isNewUser}) {
+           
+            return token
+        },
+        
+        async session({session, token}) {
+        session.user.id = token.sub
+        
+        return session
         }
+    
+          
     },
     providers:[]
 } satisfies NextAuthConfig

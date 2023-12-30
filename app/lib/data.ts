@@ -1,9 +1,7 @@
 import { sql } from '@vercel/postgres';
 import {
-  CustomerField,
   CustomersTableType,
   InvoiceForm,
-  InvoicesTable,
   LatestInvoiceRaw,
   User,
   Revenue,
@@ -90,7 +88,44 @@ export async function fetchCardData() {
   }
 }
 
-import { getToken } from "next-auth/jwt"
+import { auth } from '@/auth';
+
+export async function fetchUsers(){
+  try {
+    const results_users = await prisma.user.findMany({})
+    return results_users
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch accreusersditations.');
+  }
+  
+}
+
+export async function fetchNontransactedAccreditations(){
+  try {
+
+    // Get user from jwt
+    const token = await auth()
+    const idUser = token?.user?.id
+
+    const results_accred = await prisma.accreditation.findMany({
+      where:{
+        OR:[
+          {owner_id:idUser},
+          {creator_id:idUser},
+        ],
+        NOT : 
+          {last_transaction_status: {equals:null}},
+        
+      
+      }
+    })
+    return results_accred
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch accreditations.');
+  }
+}
 
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredAccreditations(
@@ -103,37 +138,123 @@ export async function fetchFilteredAccreditations(
   try {
 
     // Get user from jwt
-    const token = await getToken({ req, secret })
-    console.log("JSON Web Token", token)
+    const token = await auth()
+    const idUser = token?.user?.id
 
-    const results = await prisma.accreditation.findMany()
-    const invoices = await sql<InvoicesTable>`
-      SELECT
-        invoices.id,
-        invoices.amount,
-        invoices.date,
-        invoices.status,
-        customers.name,
-        customers.email,
-        customers.image_url
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      WHERE
-        customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`} OR
-        invoices.amount::text ILIKE ${`%${query}%`} OR
-        invoices.date::text ILIKE ${`%${query}%`} OR
-        invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
-      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-    `;
+    // query for accreditations and filter by user
+    const results_accred = await prisma.accreditation.findMany({
+      where : {
+        AND: 
+        [
+          {OR: 
+            [
+              {
+                name: {
+                  contains: query,
+                  mode:'insensitive'
+                }
+              },
+              {
+                description: {
+                  contains: query,
+                  mode:'insensitive'
+                }
+              }
+            ]
+          },
+          {OR: 
+            [
+              {
+                creator_id: {
+                  equals: idUser,
+                }
+              },
+              {
+                owner_id: {
+                  equals: idUser,
+                }
+              },
+            ]
+          }
+        ]
+      },
+      include: {
+        creator: {
+          select:{
+            name:true
+          }
+        },
+        owner: {
+          select:{
+            name:true
+          }
+        },
+      }
 
-    return invoices.rows;
+    })
+
+    // query for user
+    return results_accred
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoices.');
+    throw new Error('Failed to fetch accreditations.');
   }
 }
+
+
+export async function fetchFilteredTransactions(
+  query: string,
+  currentPage: number,
+  ) {
+  noStore()
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+
+    // Get user from jwt
+    const token = await auth()
+    const idUser = token?.user?.id
+
+    // query for accreditations and filter by user
+    const results_trans = await prisma.transaction.findMany({
+      where : {
+        AND : [
+          {OR: [
+            {to_id: {equals: idUser}},
+            {from_id: {equals: idUser}},
+          ]},
+          {accreditation : {
+            name : {contains:query, mode:'insensitive'}
+          }}
+          
+
+        ]
+      },
+      include : {
+        accreditation : {
+          select : {name:true}
+        },
+        to : {
+          select : {email:true}
+        },
+        from : {
+          select : {email:true}
+        },
+      }
+
+    })
+    
+    console.log(results_trans)
+
+    // query for user
+    return results_trans
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch transactions.');
+  }
+}
+
+
 
 export async function fetchInvoicesPages(query: string) {
   noStore()
@@ -157,45 +278,28 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
-export async function fetchInvoiceById(id: string) {
+export async function fetchAccreditationById(id: string) {
   noStore()
   try {
-    const data = await sql<InvoiceForm>`
-      SELECT
-        invoices.id,
-        invoices.customer_id,
-        invoices.amount,
-        invoices.status
-      FROM invoices
-      WHERE invoices.id = ${id};
-    `;
+    const data = await prisma.accreditation.findUnique(
+      {where:{id:id}}
+    )
 
-    const invoice = data.rows.map((invoice) => ({
-      ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
-    }));
-
-    return invoice[0];
+    return data;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    throw new Error('Failed to fetch accreditation.');
   }
 }
 
-export async function fetchCustomers() {
+export async function fetchAccreditationTypes() {
   noStore()
   try {
-    const data = await sql<CustomerField>`
-      SELECT
-        id,
-        name
-      FROM customers
-      ORDER BY name ASC
+    const result = await prisma.$queryRaw`
+    SELECT enum_range(NULL::accreditation_type)
     `;
 
-    const customers = data.rows;
-    return customers;
+    return result[0].enum_range;
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all customers.');

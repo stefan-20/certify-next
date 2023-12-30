@@ -1,23 +1,23 @@
 import Form from '@/app/ui/accreditations/create-form';
 import Breadcrumbs from '@/app/ui/accreditations/breadcrumbs';
-import { fetchCustomers } from '@/app/lib/data';
+import { fetchAccreditationTypes } from '@/app/lib/data';
 
 export default async function Page() {
-  const customers = await fetchCustomers();
+  const accreditationTypes = await fetchAccreditationTypes();
 
   return (
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Invoices', href: '/dashboard/invoices' },
+          { label: 'Accreditations', href: '/dashboard/accreditations' },
           {
-            label: 'Create Invoice',
-            href: '/dashboard/invoices/create',
+            label: 'Create Accreditation',
+            href: '/dashboard/accreditations/create',
             active: true,
           },
         ]}
       />
-      <Form customers={customers} />
+      <Form accreditationTypes={accreditationTypes} />
     </main>
   );
 }

@@ -1,5 +1,4 @@
 import CertifyLogo from '../ui/certify-logo';
-import LoginForm from '../ui/login-form';
 import RegisterForm from '../ui/register-form';
 export default function RegisterPage() {
   return (
@@ -11,7 +10,6 @@ export default function RegisterPage() {
           </div>
         </div>
         <RegisterForm></RegisterForm>
-        {/* <LoginForm></LoginForm> */}
       </div>
     </main>
   );

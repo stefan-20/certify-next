@@ -36,7 +36,8 @@ export type Transaction = {
   id: string;
   from_id: string;
   to_id: string;
-  accred_id: string;
+  accreditation: string;
+  accreditation_id: string;
   status: 'pending' | 'confirmed' | 'rejected';
 
   created_on: string;
@@ -138,4 +139,20 @@ export type InvoiceForm = {
   customer_id: string;
   amount: number;
   status: 'pending' | 'paid';
+};
+
+
+export type AccreditationForm = {
+  id: string;
+  name: string;
+  description:string;
+  valid_on: Date | null;
+  valid_until: Date | null;
+  is_active: boolean | null;
+  type: 'certificate' | 'attest' | 'testimonial' | 'reference' ;
+  last_transaction_status: null |'pending' | 'completed'
+  created_on: Date|null;
+  modified_on: Date|null;
+  creator_id: string;
+  owner_id: string;
 };

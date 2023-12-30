@@ -9,15 +9,16 @@ import { redirect } from 'next/navigation'
 import { PasswordMismatchError, UserExistsError } from './customErrors'
 import bcrypt from 'bcrypt';
 import prisma from './prisma'
+import moment from 'moment'
 const FormSchema = z.object({
-    id: z.string(),
-    customerId: z.string({invalid_type_error:'Please select a customer.'}),
-    amount: z.coerce.number().gt(0, {message:'Please enter an amount greater than 0.'}),
-    status: z.enum(['pending','paid'],{invalid_type_error:'Please select an invoice status.'}),
-    date: z.string()
+    name: z.string({required_error: 'Please enter a name.'}),
+    description: z.string().optional(),
+    type: z.enum(['certificate','attest', 'testimonial', 'review'],{invalid_type_error:'Please select an accreditation type.'}),
+    validFrom: z.string(),
+    validUntil: z.string().optional()
 }) 
 
-const CreateInvoice = FormSchema.omit({id:true,date:true})
+const CreateAccreditation = FormSchema
 
 export type State = {
   errors?:{
@@ -28,85 +29,206 @@ export type State = {
   message?:string|null;
 }
 
-export default async function createInvoice(prevState:State, formData: FormData) {
-    const rawFormData = {
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
+import { auth } from '@/auth'
+
+export default async function createAccreditation(prevState:State, formData: FormData) {
+
+  const token = await auth()
+  const idUser = token?.user?.id
+
+  const rawFormData = {
+    name:formData.get('accreditation'),
+    description:formData.get('description'),
+    type:formData.get('accreditationType'),
+    validFrom:formData.get('valid_from'),
+    validUntil:formData.get('valid_until'),
+  }
+  console.log("RAW FORM DATA")
+  console.log(rawFormData)
+
+  // TODO: requires form validation
+
+  const validatedFields = CreateAccreditation.safeParse(rawFormData)
+  console.log("VALIDATED FIELDS")
+  console.log(validatedFields)
+  if (!validatedFields.success){
+    console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message:'Missing fields. Failed to create accreditation.'
     }
+  }
 
-    const validatedFields = CreateInvoice.safeParse(rawFormData)
-    console.log(validatedFields)
-    if (!validatedFields.success){
-      return {
-        errors: validatedFields.error.flatten().fieldErrors,
-        message:'Missing fields. Failed to create invoice.'
-      }
+  const {name, description, type, validFrom, validUntil }= validatedFields.data
+  console.log(validFrom)
+  console.log(validUntil)
+  const date = moment(validFrom, "DD/MM/YYYY", true).format()
+  console.log(date)
+  try{
+      console.log("HERE")
+      const accreditation = await prisma.accreditation.create({
+        data: {
+          name: name,
+          description: description,
+          type: type,
+          valid_on: moment(validFrom, "DD/MM/YYYY", true).format(),
+          valid_until: validUntil?moment(validUntil, "DD/MM/YYYY", true).format():null,
+          owner_id: idUser,
+          creator_id: idUser,
+
+        }
+      })
+
+      console.log(accreditation)
+  } catch(error){
+    console.log(error)
+    return {
+      message:'Database Error. Failed to create accreditation.'
     }
-
-    const {customerId, amount, status }= validatedFields.data
-    const amountInCents = amount*100
-    const date = new Date().toISOString().split('T')[0]
-
-    try{
-
-      await sql `
-          INSERT INTO invoices (customer_id, amount, status, date)
-          VALUES (${customerId},${amountInCents},${status},${date})
-      `
-    } catch(error){
-      return {
-        message:'Database Error. Failed to create invoice.'
-      }
-    }
-    // Clears client router cache for this route and triggers a new call to the server
-    revalidatePath('/dashboard/invoices')
-    redirect('/dashboard/invoices')
+  }
+  // Clears client router cache for this route and triggers a new call to the server
+  revalidatePath('/dashboard/accreditations')
+  redirect('/dashboard/accreditations')
 }
 
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+const TransactionFormSchema = z.object({
+  accreditation_id: z.string({required_error: 'Please select an accreditation.'}),
+  to_id: z.string({required_error: 'Please select an user to transact to.'}),
+}) 
+
+export async function createTransaction(prevState:State, formData: FormData) {
+  // Need to get the data
+  // Need to ensure that the accreditation is not being transacted yet
+  const token = await auth()
+  const idUser = token?.user?.id
+  console.log(formData)
+  const rawFormData = {
+    accreditation_id:formData.get('accreditation'),
+    to_id:formData.get('userTo'),
+  }
+  console.log("RAW FORM DATA")
+  console.log(rawFormData)
+
+  // // TODO: requires form validation
+
+  const validatedFields = TransactionFormSchema.safeParse(rawFormData)
+  console.log("VALIDATED FIELDS")
+  console.log(validatedFields)
+  if (!validatedFields.success){
+    console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message:'Missing fields. Failed to create accreditation.'
+    }
+  }
+
+  const {accreditation_id, to_id }= validatedFields.data
+  try{
+      console.log("HERE")
+
+      // create transaction (status completed)
+      const result_create = await prisma.transaction.create({
+        data: {
+          accreditation_id: accreditation_id,
+          status : 'completed',
+          to_id: to_id,
+          from_id: idUser
+        }
+      })
+
+      // change last transaction status and owner in accreditation
+      const result_change = await prisma.accreditation.update({
+        where:{id:accreditation_id},
+        data : {
+          last_transaction_status:'completed',
+          owner_id:to_id
+        }
+      })
+      // const accreditation = await prisma.transaction.create({
+      //   data: {
+      //     name: name,
+      //     description: description,
+      //     type: type,
+      //     valid_on: moment(validFrom, "DD/MM/YYYY", true).format(),
+      //     valid_until: validUntil?moment(validUntil, "DD/MM/YYYY", true).format():null,
+      //     owner_id: idUser,
+      //     creator_id: idUser,
+
+      //   }
+      // })
+
+      // console.log(accreditation)
+  } catch(error){
+    console.log(error)
+    return {
+      message:'Database Error. Failed to create transaction.'
+    }
+  }
+  // Clears client router cache for this route and triggers a new call to the server
+  revalidatePath('/dashboard/transactions')
+  redirect('/dashboard/transactions')
+}
 
 
-export async function updateInvoice(id:string, prevState:State, formData:FormData) {
-  const validatedFields = UpdateInvoice.safeParse({
-      customerId: formData.get('customerId'),
-      amount: formData.get('amount'),
-      status: formData.get('status'),
-  });
+const UpdateAccreditation = FormSchema;
 
+
+export async function updateAccreditation(id:string, prevState:State, formData:FormData) {
+  const validatedFields = UpdateAccreditation.safeParse({
+    name:formData.get('accreditation'),
+    description:formData.get('description'),
+    type:formData.get('accreditationType'),
+    validFrom:formData.get('valid_from'),
+    validUntil:formData.get('valid_until'),
+  })
   if (!validatedFields.success){
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       
-      message:'Missing fields. Failed to update invoice.'
+      message:'Missing fields. Failed to update accreditation.'
     }
   }
 
-  const { customerId, amount, status } = validatedFields.data
+  const { name, description, type, validFrom, validUntil } = validatedFields.data
 
-  const amountInCents = amount * 100;
 
   try {
-    await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-    `;
+    const result = await prisma.accreditation.update({
+      where : {id:id},
+      data : {
+        name: name,
+        description: description,
+        type: type,
+        valid_on: moment(validFrom, "DD/MM/YYYY", true).format(),
+        valid_until: validUntil?moment(validUntil, "DD/MM/YYYY", true).format():null
+      }
+    })
   } catch(error){
+    console.log(error)
     return {
-      message: 'Database error. Failed to update invoice.'
+      message: 'Database error. Failed to update accreditation.'
     }
   }
  
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath('/dashboard/accreditations');
+  redirect('/dashboard/accreditations');
 }
 
-export async function deleteInvoice(id:string){
-  await sql `
-   DELETE FROM invoices WHERE id = ${id}     
-  `
-  revalidatePath('/dashboard/invoices/')
+export async function deleteAccreditation(id:string){
+  const result = await prisma.accreditation.delete({
+    where: {id:id}
+  })
+  
+  revalidatePath('/dashboard/accreditations/')
+}
+export async function transactAccreditation(id:string){
+  // const result = await prisma.accreditation.delete({
+  //   where: {id:id}
+  // })
+  
+  revalidatePath('/dashboard/accreditations/')
+  redirect('/dashboard/transactions/create');
 }
 
 import { signIn } from '@/auth'

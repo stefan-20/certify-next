@@ -1,7 +1,8 @@
 'use client';
 
-import { CustomerField, InvoiceForm } from '@/app/lib/definitions';
+import { CustomerField, AccreditationForm } from '@/app/lib/definitions';
 import {
+  DocumentIcon,
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
@@ -10,120 +11,196 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
-import { updateInvoice } from '@/app/lib/actions';
+import { updateAccreditation } from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
-import { fetchInvoiceById } from '@/app/lib/data';
 
-export default function EditInvoiceForm({
-  invoice,
-  customers,
+import { DatePicker } from '@/app/components/Datepicker/datepicker';
+
+export default function EditAccreditationForm({
+  accreditation,
+  accreditationTypes,
 }: {
-  invoice: InvoiceForm;
-  customers: CustomerField[];
+  accreditation: AccreditationForm;
+  accreditationTypes: [];
 }) {
   const initialState = { message: null, errors: {} };
-  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
-  const [state, dispatch] = useFormState(updateInvoiceWithId, initialState);
+  const updateAccreditationWithId = updateAccreditation.bind(
+    null,
+    accreditation.id,
+  );
+  const [state, dispatch] = useFormState(
+    updateAccreditationWithId,
+    initialState,
+  );
   return (
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Choose customer
+          {/* NAME */}
+          <label
+            htmlFor="accreditation"
+            className="mb-2 block text-sm font-medium"
+          >
+            Enter a name <span className="text-red-500">*</span>
+          </label>
+          <div className="">
+            <input
+              type="text"
+              placeholder="Enter a name"
+              id="accreditation"
+              name="accreditation"
+              defaultValue={accreditation.name}
+              className="peer block w-1/4 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              aria-describedby="name-error"
+              required={true}
+            />
+          </div>
+          {/* DESCRIPTION */}
+          <label
+            htmlFor="description"
+            className="mb-2 mt-4 block text-sm font-medium"
+          >
+            Enter a description
+          </label>
+          <div className="">
+            <textarea
+              name="description"
+              id="description"
+              rows={3}
+              placeholder="Enter a description"
+              aria-describedby="name-error"
+              className="peer block w-1/2 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={accreditation.description}
+            ></textarea>
+          </div>
+
+          {/* FILE UPLOAD */}
+          <label htmlFor="file" className="mb-2 mt-4 block text-sm font-medium">
+            Upload a file
+          </label>
+
+          <div className="flex w-full items-center justify-start">
+            <label
+              id="dropzone-file"
+              className="dark:hover:bg-bray-800 h-42 flex w-1/2 cursor-pointer flex-col items-center justify-start rounded-lg border-2 border-dashed border-gray-300 bg-white hover:bg-gray-100"
+            >
+              <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                <svg
+                  className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                  />
+                </svg>
+                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="font-semibold">Click to upload</span> or drag
+                  and drop
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  PDF,SVG, PNG, JPG or GIF (MAX. 800x400px)
+                </p>
+              </div>
+              <input id="file" type="file" className="hidden" />
+            </label>
+          </div>
+          <label
+            htmlFor="accreditationType"
+            className="mb-2 mt-4 block text-sm font-medium"
+          >
+            Select type
           </label>
           <div className="relative">
             <select
-              id="customer"
-              name="customerId"
+              id="accreditationType"
+              name="accreditationType"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={invoice.customer_id}
+              defaultValue={accreditation.type}
+              placeholder="Select an accreditation type"
+              aria-describedby="accreditationType-error"
             >
-              <option value="" disabled>
-                Select a customer
-              </option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
+              <option value="" disabled></option>
+              {accreditationTypes.map((type, index) => (
+                <option key={type + index} value={type}>
+                  {type}
                 </option>
               ))}
             </select>
-            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+            <DocumentIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+          <div id="name-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.customerId &&
+              state.errors.customerId.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
 
-        {/* Invoice Amount */}
+        {/* Valid dates */}
+        <div className="flex w-1/2 flex-row justify-between">
+          <div className="align-center flex flex-col justify-start">
+            <label
+              htmlFor="valid_from"
+              className="mb-2 block text-sm font-medium"
+            >
+              Valid from
+            </label>
+            <div>
+              <DatePicker
+                id={'valid_from'}
+                defaultDate={new Date(accreditation.valid_on!)}
+              ></DatePicker>
+            </div>
+          </div>
+          <div className="align-center flex flex-col justify-start">
+            <label
+              htmlFor="valid_until"
+              className="mb-2 block text-sm font-medium"
+            >
+              Valid until
+            </label>
+            <div>
+              <DatePicker
+                id={'valid_until'}
+                defaultDate={
+                  accreditation.valid_until
+                    ? new Date(accreditation.valid_until)
+                    : null
+                }
+              ></DatePicker>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-            Choose an amount
-          </label>
-          <div className="relative mt-2 rounded-md">
-            <div className="relative">
-              <input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                defaultValue={invoice.amount}
-                placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
+          <div id="amount-error" aria-atomic="true" aria-live="polite">
+            {state.errors?.amount &&
+              state.errors.amount.map((error: string) => (
+                <p key={error} className="mt-2 text-sm text-red-500">
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
-
-        {/* Invoice Status */}
-        <fieldset>
-          <legend className="mb-2 block text-sm font-medium">
-            Set the invoice status
-          </legend>
-          <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
-            <div className="flex gap-4">
-              <div className="flex items-center">
-                <input
-                  id="pending"
-                  name="status"
-                  type="radio"
-                  value="pending"
-                  defaultChecked={invoice.status === 'pending'}
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-                />
-                <label
-                  htmlFor="pending"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
-                >
-                  Pending <ClockIcon className="h-4 w-4" />
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="paid"
-                  name="status"
-                  type="radio"
-                  value="paid"
-                  defaultChecked={invoice.status === 'paid'}
-                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
-                />
-                <label
-                  htmlFor="paid"
-                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
-                >
-                  Paid <CheckIcon className="h-4 w-4" />
-                </label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
       </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
-          href="/dashboard/invoices"
+          href="/dashboard/accreditations"
           className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
         >
           Cancel
         </Link>
-        <Button type="submit">Edit Invoice</Button>
+        <Button type="submit">Update Accreditation</Button>
       </div>
     </form>
   );

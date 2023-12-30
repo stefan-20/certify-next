@@ -1,17 +1,17 @@
 import Form from '@/app/ui/accreditations/edit-form';
 import Breadcrumbs from '@/app/ui/accreditations/breadcrumbs';
-import { fetchCustomers } from '@/app/lib/data';
-import { fetchInvoiceById } from '@/app/lib/data';
+import { fetchAccreditationTypes } from '@/app/lib/data';
+import { fetchAccreditationById } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
-  const [invoice, customers] = await Promise.all([
-    fetchInvoiceById(id),
-    fetchCustomers(),
+  const [Accreditation, accreditationTypes] = await Promise.all([
+    fetchAccreditationById(id),
+    fetchAccreditationTypes(),
   ]);
 
-  if (!invoice) {
+  if (!Accreditation) {
     notFound();
   }
 
@@ -19,15 +19,18 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Invoices', href: '/dashboard/invoices' },
+          { label: 'Accreditations', href: '/dashboard/accreditations' },
           {
-            label: 'Edit Invoice',
-            href: `/dashboard/invoices/${id}/edit`,
+            label: 'Edit Accreditations',
+            href: `/dashboard/accreditations/${id}/edit`,
             active: true,
           },
         ]}
       />
-      <Form invoice={invoice} customers={customers} />
+      <Form
+        accreditation={Accreditation}
+        accreditationTypes={accreditationTypes}
+      />
     </main>
   );
 }
