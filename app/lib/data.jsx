@@ -1,12 +1,6 @@
-'use server'
+'use server';
 import { sql } from '@vercel/postgres';
-import {
-  CustomersTableType,
-  InvoiceForm,
-  LatestInvoiceRaw,
-  User,
-  Revenue,
-} from './definitions';
+
 import { formatCurrency } from './utils';
 
 import { unstable_noStore as noStore } from 'next/cache';
@@ -15,14 +9,14 @@ import prisma from './prisma';
 export async function fetchRevenue() {
   // Add noStore() here prevent the response from being cached.
   // This is equivalent to in fetch(..., {cache: 'no-store'}).
-  noStore()
+  noStore();
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
-    const data = await sql<Revenue>`SELECT * FROM revenue`;
+    const data = (await sql) < Revenue > `SELECT * FROM revenue`;
     // console.log('Data fetch completed after 3 seconds.');
 
     return data.rows;
@@ -33,9 +27,12 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
-  noStore()
+  noStore();
   try {
-    const data = await sql<LatestInvoiceRaw>`
+    const data =
+      (await sql) <
+      LatestInvoiceRaw >
+      `
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
@@ -54,7 +51,7 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
-  noStore()
+  noStore();
   try {
     // You can probably combine these into a single SQL query
     // However, we are intentionally splitting them to demonstrate
@@ -91,204 +88,180 @@ export async function fetchCardData() {
 
 import { auth } from '@/auth';
 
-export async function fetchUsers(){
+export async function fetchUsers() {
   try {
-    const results_users = await prisma.user.findMany({})
-    return results_users
+    const results_users = await prisma.user.findMany({});
+    return results_users;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accreusersditations.');
   }
-  
 }
 
-export async function fetchNontransactedAccreditations(){
+export async function fetchNontransactedAccreditations() {
   try {
-
     // Get user from jwt
-    const token = await auth()
-    const idUser = token?.user?.id
-
+    const token = await auth();
+    const idUser = token?.user?.id;
+    console.log(idUser);
     const results_accred = await prisma.accreditation.findMany({
-      where:{
-        OR:[
-          {owner_id:idUser},
-          {creator_id:idUser},
-        ],
-        NOT : 
-          {last_transaction_status: {equals:null}},
-        
-      
-      }
-    })
-    return results_accred
+      where: {
+        OR: [{ owner_id: idUser }, { creator_id: idUser }],
+        AND: { last_transaction_status: { equals: null } },
+      },
+    });
+    console.log(results_accred);
+    return results_accred;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accreditations.');
   }
 }
 
-export async function fetchValidationAccreditationsByUserID(id:string){
+export async function fetchValidationAccreditationsByUserID(id) {
   try {
-
     // Get user from jwt and check if he is allowed to view (TODO)
-    const token = await auth()
-    const idUser = token?.user?.id
-    
+    const token = await auth();
+    const idUser = token?.user?.id;
+
     const results_user = await prisma.user.findUnique({
-      where:{id:id},
-      include:{
-        owned_accreditations:{
+      where: { id: id },
+      include: {
+        owned_accreditations: {
           include: {
-            creator:
-              {select:{name:true}}
-          }
-        }
-      }
-    })
-    console.log(results_user)
-    console.log(results_user?.owned_accreditations)
-    return results_user?.owned_accreditations
+            creator: { select: { name: true } },
+          },
+        },
+      },
+    });
+    console.log(results_user);
+    console.log(results_user?.owned_accreditations);
+    return results_user?.owned_accreditations;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accreditations.');
   }
 }
-
-
-
 
 const ITEMS_PER_PAGE = 6;
-export async function fetchFilteredAccreditations(
-  query: string,
-  currentPage: number,
-  ) {
-  noStore()
+export async function fetchFilteredAccreditations(query, currentPage) {
+  noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-
     // Get user from jwt
-    const token = await auth()
-    const idUser = token?.user?.id
+    const token = await auth();
+    const idUser = token?.user?.id;
 
     // query for accreditations and filter by user
     const results_accred = await prisma.accreditation.findMany({
-      where : {
-        AND: 
-        [
-          {OR: 
-            [
+      where: {
+        AND: [
+          {
+            OR: [
               {
                 name: {
                   contains: query,
-                  mode:'insensitive'
-                }
+                  mode: 'insensitive',
+                },
               },
               {
                 description: {
                   contains: query,
-                  mode:'insensitive'
-                }
-              }
-            ]
+                  mode: 'insensitive',
+                },
+              },
+            ],
           },
-          {OR: 
-            [
+          {
+            OR: [
               {
                 creator_id: {
                   equals: idUser,
-                }
+                },
               },
               {
                 owner_id: {
                   equals: idUser,
-                }
+                },
               },
-            ]
-          }
-        ]
+            ],
+          },
+        ],
       },
       include: {
         creator: {
-          select:{
-            name:true
-          }
+          select: {
+            name: true,
+          },
         },
         owner: {
-          select:{
-            name:true
-          }
+          select: {
+            name: true,
+          },
         },
-      }
-
-    })
+      },
+    });
 
     // query for user
-    return results_accred
+    return results_accred;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch accreditations.');
   }
 }
 
-
-export async function fetchFilteredTransactions(
-  query: string,
-  currentPage: number,
-  ) {
-  noStore()
+export async function fetchFilteredTransactions(query, currentPage) {
+  noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-
     // Get user from jwt
-    const token = await auth()
-    const idUser = token?.user?.id
+    const token = await auth();
+    const idUser = token?.user?.id;
 
     // query for accreditations and filter by user
     const results_trans = await prisma.transaction.findMany({
-      where : {
-        AND : [
-          {OR: [
-            {to_id: {equals: idUser}},
-            {from_id: {equals: idUser}},
-          ]},
-          {accreditation : {
-            name : {contains:query, mode:'insensitive'}
-          }}
-          
-
-        ]
+      where: {
+        AND: [
+          {
+            OR: [
+              { to_id: { equals: idUser } },
+              { from_id: { equals: idUser } },
+            ],
+          },
+          {
+            accreditation: {
+              name: { contains: query, mode: 'insensitive' },
+            },
+          },
+        ],
       },
-      include : {
-        accreditation : {
-          select : {name:true}
+      include: {
+        accreditation: {
+          select: { name: true },
         },
-        to : {
-          select : {email:true}
+        to: {
+          select: { email: true },
         },
-        from : {
-          select : {email:true}
+        from: {
+          select: { email: true },
         },
-      }
+      },
+    });
 
-    })
-    
-    console.log(results_trans)
+    console.log(results_trans);
 
     // query for user
-    return results_trans
+    return results_trans;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch transactions.');
   }
 }
 
-
-
-export async function fetchInvoicesPages(query: string) {
-  noStore()
+export async function fetchInvoicesPages(query) {
+  noStore();
   try {
     const count = await sql`SELECT COUNT(*)
     FROM invoices
@@ -309,12 +282,10 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
-export async function fetchAccreditationById(id: string) {
-  noStore()
+export async function fetchAccreditationById(id) {
+  noStore();
   try {
-    const data = await prisma.accreditation.findUnique(
-      {where:{id:id}}
-    )
+    const data = await prisma.accreditation.findUnique({ where: { id: id } });
 
     return data;
   } catch (error) {
@@ -324,7 +295,7 @@ export async function fetchAccreditationById(id: string) {
 }
 
 export async function fetchAccreditationTypes() {
-  noStore()
+  noStore();
   try {
     const result = await prisma.$queryRaw`
     SELECT enum_range(NULL::accreditation_type)
@@ -337,30 +308,27 @@ export async function fetchAccreditationTypes() {
   }
 }
 
-
-export async function getUser(email: string) {
-  noStore()
+export async function getUser(email) {
+  noStore();
   try {
     const user = await sql`SELECT * FROM users WHERE email=${email}`;
-    return user.rows[0] as User;
+    return user.rows[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
 }
 
-
-
-export async function getOptions(query: string) {
+export async function getOptions(query) {
   try {
     const results = await prisma.user.findMany({
-      where:{
-        email : {contains:query, mode:'insensitive'}
-      }
-    })
+      where: {
+        email: { contains: query, mode: 'insensitive' },
+      },
+    });
 
-    console.log(results)
-    return []
+    console.log(results);
+    return [];
   } catch (error) {
     console.error('Failed to fetch options:', error);
     throw new Error('Failed to fetch options.');

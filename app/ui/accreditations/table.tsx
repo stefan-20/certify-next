@@ -15,7 +15,7 @@ export default async function AccreditationsTable({
   currentPage: number;
 }) {
   const accreditations = await fetchFilteredAccreditations(query, currentPage);
-
+  console.log(accreditations);
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">

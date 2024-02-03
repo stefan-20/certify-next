@@ -6,6 +6,7 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "noImplicitAny": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -29,6 +30,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.js",
     "scripts/seed.js"
-  ],
+, "app/lib/data.jsx", "app/lib/actions.jsx", "app/components/Datepicker/datepicker.jsx", "app/ui/transactions/table.jsx", "auth.config.js"  ],
   "exclude": ["node_modules"]
 }

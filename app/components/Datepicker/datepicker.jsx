@@ -33,32 +33,27 @@ const options = {
   inputNameProp: 'date',
   inputIdProp: 'date',
   inputPlaceholderProp: 'Select Date',
+  // TODO: FIX FOR build
   // inputDateFormatProp: 'yyyy-mm-dd',
-  // inputDateFormatProp: {
-  //   day: 'numeric',
-  //   month: 'numeric',
-  //   year: 'numeric',
-  // },
+  inputDateFormatProp: {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  },
 };
 
-export const DatePicker = ({
-  id,
-  defaultDate,
-}: {
-  id: string;
-  defaultDate: Date | null;
-}) => {
+export const DatePicker = ({ id, defaultDate }) => {
   const [show, setShow] = useState(false);
-  const handleChange = (selectedDate: Date) => {
+  const handleChange = (selectedDate) => {
     console.log(selectedDate);
   };
-  const handleClose = (state: boolean) => {
+  const handleClose = (state) => {
     setShow(state);
   };
 
   options.inputIdProp = id;
   options.inputNameProp = id;
-  options.defaultDate = defaultDate!;
+  options.defaultDate = defaultDate;
   return (
     <div className="">
       <Datepicker

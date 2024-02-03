@@ -3,15 +3,23 @@ import { UpdateAccreditation } from '@/app/ui/accreditations/buttons';
 import { NotifyTransaction, CancleTransaction } from './buttons';
 import { fetchFilteredTransactions } from '@/app/lib/data';
 import TransactionStatus from './status';
-export default async function TransactionsTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
-  const transactions = await fetchFilteredTransactions(query, currentPage);
 
+// type Transaction = {
+//   id: string;
+//   accreditation_id: string;
+//   status:string;
+//   from_id: string;
+//   to_id: string;
+//   created_on: Date | null;
+//   accreditation: any;
+//   to: any;
+//   from: any
+
+// };
+
+export default async function TransactionsTable({ query, currentPage }) {
+  const transactions = await fetchFilteredTransactions(query, currentPage);
+  console.log(transactions);
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
