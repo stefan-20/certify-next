@@ -56,6 +56,7 @@ export function DeleteAccreditation({ id }: { id: string }) {
     </>
   );
 }
+
 export function TransactAccreditation({ id }: { id: string }) {
   const transactAccreditationWithId = transactAccreditation.bind(null, id);
   return (

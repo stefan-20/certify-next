@@ -1,18 +1,9 @@
 'use client';
-import { CustomerField } from '@/lib/definitions';
 import Link from 'next/link';
-import {
-  CheckIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  DocumentIcon,
-} from '@heroicons/react/24/outline';
+import { DocumentIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import { createTransaction } from '@/lib/actions';
 import { useFormState } from 'react-dom';
-// import Datepicker from 'tailwind-datepicker-react';
-import { DatePicker } from '@/components/Datepicker/datepicker';
-import { useState } from 'react';
 
 import { Switch } from '@nextui-org/react';
 
@@ -72,7 +63,6 @@ export default function Form({
                 className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 placeholder="Select a user to transact to..."
                 required={true}
-                // aria-describedby="accreditationType-error"
               >
                 <option value="" disabled></option>
                 {users.map((user, index) => (

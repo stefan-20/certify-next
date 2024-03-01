@@ -1,18 +1,10 @@
 'use client';
-import { CustomerField } from '@/lib/definitions';
 import Link from 'next/link';
-import {
-  CheckIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  DocumentIcon,
-} from '@heroicons/react/24/outline';
+import { DocumentIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
 import createAccreditation from '@/lib/actions';
 import { useFormState } from 'react-dom';
-// import Datepicker from 'tailwind-datepicker-react';
-import { DatePicker } from '@/components/Datepicker/datepicker';
-import { useState } from 'react';
+import { DatePicker } from '@/components/datepicker/datepicker';
 
 export default function Form({
   accreditationTypes,

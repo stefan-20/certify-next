@@ -34,7 +34,8 @@
     "lib/actions.jsx",
     "app/components/Datepicker/datepicker.jsx",
     "components/ui/transactions/table.jsx",
-    "auth.config.js"
+    "auth.config.js",
+    "components/datepicker/datepicker.jsx"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,20 +1,13 @@
 'use client';
 
-import { CustomerField, AccreditationForm } from '@/lib/definitions';
-import {
-  DocumentIcon,
-  CheckIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  UserCircleIcon,
-} from '@heroicons/react/24/outline';
+import { DocumentIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 import { updateAccreditation } from '@/lib/actions';
 import { useFormState } from 'react-dom';
 
-import { DatePicker } from '@/components/Datepicker/datepicker';
+import { DatePicker } from '@/components/datepicker/datepicker';
 
 export default function EditAccreditationForm({
   accreditation,
