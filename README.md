@@ -177,14 +177,13 @@
   - https://nextui.org/docs/guide/installation
 
 - improvementts
+
   - fixed column widths for edit, transcribe, ...
   - required for valid from
   - Date column naming
   - change order in sidebar
   - form label namings shorten to input type
   - add option to not allow continuous transactions
-
-
 
 - resolving fs module error when importing things on client side that are not bundled
   - https://maikelveen.com/blog/how-to-solve-module-not-found-cant-resolve-fs-in-nextjs
