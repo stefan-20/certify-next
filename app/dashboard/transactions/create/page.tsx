@@ -9,8 +9,6 @@ export default async function Page() {
     fetchUsers(),
   ]);
 
-  console.log('HERE!!!!!!!!');
-  console.log(accrediations);
   return (
     <main>
       <Breadcrumbs

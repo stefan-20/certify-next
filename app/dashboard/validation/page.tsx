@@ -1,10 +1,7 @@
 'use client';
 import { lusitana } from '@/components/ui/fonts';
-// import Search from '@/components/ui/search';
 import { ValidateUser } from '@/components/ui/validation/buttons';
 import { useEffect, useState } from 'react';
-import { fetchUsers } from '@/lib/data';
-// import { UserSelect } from '@/components/ui/validation/select';
 import Select from 'react-select';
 
 export default function Page() {
@@ -26,7 +23,6 @@ export default function Page() {
         <h1 className={`${lusitana.className} text-2xl`}>Validation</h1>
       </div>
       <div className="mt-4 flex items-center justify-start gap-2 md:mt-8">
-        {/* <Search placeholder="Search for user via email..."></Search> */}
         <Select
           options={options}
           value={selectedOption}

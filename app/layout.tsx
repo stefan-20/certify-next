@@ -1,6 +1,5 @@
 import '@/components/ui/global.css';
 import { inter } from '../components/ui/fonts';
-import { NextUIProvider } from '@nextui-org/react';
 
 export default function RootLayout({
   children,
