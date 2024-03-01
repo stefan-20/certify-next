@@ -28,8 +28,13 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/lib/placeholder-data.js",
-    "scripts/seed.js"
-, "app/lib/data.jsx", "app/lib/actions.jsx", "app/components/Datepicker/datepicker.jsx", "app/ui/transactions/table.jsx", "auth.config.js"  ],
+    "lib/placeholder-data.js",
+    "scripts/seed.js",
+    "lib/data.jsx",
+    "lib/actions.jsx",
+    "app/components/Datepicker/datepicker.jsx",
+    "components/ui/transactions/table.jsx",
+    "auth.config.js"
+  ],
   "exclude": ["node_modules"]
 }

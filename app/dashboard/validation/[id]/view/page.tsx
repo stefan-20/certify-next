@@ -1,11 +1,11 @@
-// import Form from '@/app/ui/accreditations/edit-form';
-import Breadcrumbs from '@/app/ui/accreditations/breadcrumbs';
+// import Form from '@/components/ui/accreditations/edit-form';
+import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
 import {
   fetchAccreditationTypes,
   fetchValidationAccreditationsByUserID,
 } from '@/app/lib/data';
 // import { notFound } from 'next/navigation';
-import ValidationTable from '@/app/ui/validation/table';
+import ValidationTable from '@/components/ui/validation/table';
 
 import { auth } from '@/auth';
 export default async function Page({ params }: { params: { id: string } }) {

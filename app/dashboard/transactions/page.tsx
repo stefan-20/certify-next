@@ -1,11 +1,11 @@
-import { lusitana } from '@/app/ui/fonts';
-import Search from '@/app/ui/search';
+import { lusitana } from '@/components/ui/fonts';
+import Search from '@/components/ui/search';
 
-import { CreateTransaction } from '@/app/ui/transactions/buttons';
+import { CreateTransaction } from '@/components/ui/transactions/buttons';
 import { Suspense } from 'react';
-import { TransactionsTableSkeleton } from '@/app/ui/skeletons';
+import { TransactionsTableSkeleton } from '@/components/ui/skeletons';
 
-import TransactionsTable from '@/app/ui/transactions/table';
+import TransactionsTable from '@/components/ui/transactions/table';
 export default async function Page({
   searchParams,
 }: {

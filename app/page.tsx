@@ -1,7 +1,7 @@
-import CertifyLogo from '@/app/ui/certify-logo';
+import CertifyLogo from '@/components/ui/certify-logo';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { lusitana } from './ui/fonts';
+import { lusitana } from '../components/ui/fonts';
 import Image from 'next/image';
 
 export default function Page() {

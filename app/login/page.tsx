@@ -1,5 +1,5 @@
-import CertifyLogo from '../ui/certify-logo';
-import LoginForm from '../ui/login-form';
+import CertifyLogo from '../../components/ui/certify-logo';
+import LoginForm from '../../components/ui/login-form';
 
 export default function LoginPage() {
   return (

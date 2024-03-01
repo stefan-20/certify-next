@@ -1,10 +1,21 @@
-import { ViewAccreditation } from '@/app/ui/accreditations/buttons';
+import Image from 'next/image';
+import {
+  UpdateAccreditation,
+  DeleteAccreditation,
+  TransactAccreditation,
+} from '@/components/ui/accreditations/buttons';
+import LastTransactionStatus from '@/components/ui/accreditations/status';
+import { fetchFilteredAccreditations } from '@/app/lib/data';
 
-export default async function ValidationTable({
-  accreditations,
+export default async function AccreditationsTable({
+  query,
+  currentPage,
 }: {
-  accreditations: any;
+  query: string;
+  currentPage: number;
 }) {
+  const accreditations = await fetchFilteredAccreditations(query, currentPage);
+  console.log(accreditations);
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
@@ -56,22 +67,30 @@ export default async function ValidationTable({
                   Description
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Valid From
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
                   Valid Until
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Type
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
+                  Created On
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
                   Created By
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Owned By
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Last Transaction Status
                 </th>
                 <th
                   scope="col"
                   className="relative flex justify-between py-3 pl-6 pr-3"
                 >
-                  <span className="font-large text-right">View</span>
+                  <span className="font-large text-right">Transact</span>
+                  <span className="font-large text-right">Edit</span>
+                  <span className="font-large text-right">Delete</span>
                 </th>
               </tr>
             </thead>
@@ -89,12 +108,6 @@ export default async function ValidationTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <p>
-                      {accreditation.valid_from &&
-                        new Date(accreditation.valid_from).toDateString()}
-                    </p>
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <p>
                       {accreditation.valid_until &&
                         new Date(accreditation.valid_until).toDateString()}
                     </p>
@@ -102,12 +115,24 @@ export default async function ValidationTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {accreditation.type}
                   </td>
-
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {new Date(accreditation.created_on!).toDateString()}
+                  </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {accreditation.creator.name}
                   </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {accreditation.owner.name}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    <LastTransactionStatus
+                      status={accreditation.last_transaction_status!}
+                    />
+                  </td>
                   <td className="flex justify-between whitespace-nowrap py-3 pl-6 pr-3">
-                    <ViewAccreditation id={accreditation.id} />
+                    <TransactAccreditation id={accreditation.id} />
+                    <UpdateAccreditation id={accreditation.id} />
+                    <DeleteAccreditation id={accreditation.id} />
                   </td>
                 </tr>
               ))}

@@ -1,5 +1,5 @@
-import Form from '@/app/ui/accreditations/edit-form';
-import Breadcrumbs from '@/app/ui/accreditations/breadcrumbs';
+import Form from '@/components/ui/accreditations/edit-form';
+import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
 import { fetchAccreditationTypes } from '@/app/lib/data';
 import { fetchAccreditationById } from '@/app/lib/data';
 import { notFound } from 'next/navigation';

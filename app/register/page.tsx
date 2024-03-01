@@ -1,5 +1,5 @@
-import CertifyLogo from '../ui/certify-logo';
-import RegisterForm from '../ui/register-form';
+import CertifyLogo from '../../components/ui/certify-logo';
+import RegisterForm from '../../components/ui/register-form';
 export default function RegisterPage() {
   return (
     <main className="flex items-center justify-center md:h-screen ">

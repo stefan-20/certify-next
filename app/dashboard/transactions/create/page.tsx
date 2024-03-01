@@ -1,8 +1,8 @@
-import Form from '@/app/ui/transactions/create-form';
-import Breadcrumbs from '@/app/ui/accreditations/breadcrumbs';
+import Form from '@/components/ui/transactions/create-form';
+import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
 import { fetchNontransactedAccreditations, fetchUsers } from '@/app/lib/data';
 import { Suspense } from 'react';
-import { AccreditationsTableSkeleton } from '@/app/ui/skeletons';
+import { AccreditationsTableSkeleton } from '@/components/ui/skeletons';
 export default async function Page() {
   const [accrediations, users] = await Promise.all([
     fetchNontransactedAccreditations(),

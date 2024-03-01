@@ -1,48 +1,37 @@
 'use client';
-
-import { CustomerField, AccreditationForm } from '@/app/lib/definitions';
+import { CustomerField } from '@/lib/definitions';
+import Link from 'next/link';
 import {
-  DocumentIcon,
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
-  UserCircleIcon,
+  DocumentIcon,
 } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { Button } from '@/app/ui/button';
-
-import { updateAccreditation } from '@/app/lib/actions';
+import { Button } from '@/components/ui/button';
+import createAccreditation from '@/app/lib/actions';
 import { useFormState } from 'react-dom';
-
+// import Datepicker from 'tailwind-datepicker-react';
 import { DatePicker } from '@/app/components/Datepicker/datepicker';
+import { useState } from 'react';
 
-export default function EditAccreditationForm({
-  accreditation,
+export default function Form({
   accreditationTypes,
 }: {
-  accreditation: any;
   accreditationTypes: [];
 }) {
   const initialState = { message: null, errors: {} };
-  const updateAccreditationWithId = updateAccreditation.bind(
-    null,
-    accreditation.id,
-  );
-  const [state, dispatch] = useFormState(
-    updateAccreditationWithId,
-    initialState,
-  );
+  const [state, dispatch] = useFormState(createAccreditation, initialState);
+
   return (
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Customer Name */}
         <div className="mb-4">
           {/* NAME */}
           <label
             htmlFor="accreditation"
             className="mb-2 block text-sm font-medium"
           >
-            Enter a name <span className="text-red-500">*</span>
+            Name <span className="text-red-500">*</span>
           </label>
           <div className="">
             <input
@@ -50,7 +39,6 @@ export default function EditAccreditationForm({
               placeholder="Enter a name"
               id="accreditation"
               name="accreditation"
-              defaultValue={accreditation.name}
               className="peer block w-1/4 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               aria-describedby="name-error"
               required={true}
@@ -61,7 +49,7 @@ export default function EditAccreditationForm({
             htmlFor="description"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Enter a description
+            Description
           </label>
           <div className="">
             <textarea
@@ -71,7 +59,6 @@ export default function EditAccreditationForm({
               placeholder="Enter a description"
               aria-describedby="name-error"
               className="peer block w-1/2 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={accreditation.description}
             ></textarea>
           </div>
 
@@ -116,15 +103,14 @@ export default function EditAccreditationForm({
             htmlFor="accreditationType"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Select type
+            Type
           </label>
           <div className="relative">
             <select
               id="accreditationType"
               name="accreditationType"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue={accreditation.type}
-              placeholder="Select an accreditation type"
+              placeholder="Select the accreditation type"
               aria-describedby="accreditationType-error"
             >
               <option value="" disabled></option>
@@ -153,12 +139,12 @@ export default function EditAccreditationForm({
               htmlFor="valid_from"
               className="mb-2 block text-sm font-medium"
             >
-              Valid from
+              Valid from <span className="text-red-500">*</span>
             </label>
             <div>
               <DatePicker
                 id={'valid_from'}
-                defaultDate={new Date(accreditation.valid_on!)}
+                defaultDate={new Date()}
               ></DatePicker>
             </div>
           </div>
@@ -170,14 +156,7 @@ export default function EditAccreditationForm({
               Valid until
             </label>
             <div>
-              <DatePicker
-                id={'valid_until'}
-                defaultDate={
-                  accreditation.valid_until
-                    ? new Date(accreditation.valid_until)
-                    : null
-                }
-              ></DatePicker>
+              <DatePicker id={'valid_until'} defaultDate={null}></DatePicker>
             </div>
           </div>
         </div>
@@ -200,7 +179,7 @@ export default function EditAccreditationForm({
         >
           Cancel
         </Link>
-        <Button type="submit">Update Accreditation</Button>
+        <Button type="submit">Create Accreditation</Button>
       </div>
     </form>
   );

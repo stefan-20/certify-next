@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardSkeleton from '../../ui/skeletons';
+import DashboardSkeleton from '../../../components/ui/skeletons';
 function loading() {
   return <DashboardSkeleton></DashboardSkeleton>;
 }

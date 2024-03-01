@@ -1,9 +1,9 @@
-import Pagination from '@/app/ui/accreditations/pagination';
-import Search from '@/app/ui/search';
-import Table from '@/app/ui/accreditations/table';
-import { CreateAccreditation } from '@/app/ui/accreditations/buttons';
-import { lusitana } from '@/app/ui/fonts';
-import { AccreditationsTableSkeleton } from '@/app/ui/skeletons';
+import Pagination from '@/components/ui/accreditations/pagination';
+import Search from '@/components/ui/search';
+import Table from '@/components/ui/accreditations/table';
+import { CreateAccreditation } from '@/components/ui/accreditations/buttons';
+import { lusitana } from '@/components/ui/fonts';
+import { AccreditationsTableSkeleton } from '@/components/ui/skeletons';
 import { Suspense } from 'react';
 
 import { fetchInvoicesPages } from '@/app/lib/data';

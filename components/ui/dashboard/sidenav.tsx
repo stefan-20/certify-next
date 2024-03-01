@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import NavLinks from '@/app/ui/dashboard/nav-links';
-import CertifyLogo from '@/app/ui/certify-logo';
+import NavLinks from '@/components/ui/dashboard/nav-links';
+import CertifyLogo from '@/components/ui/certify-logo';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import { signOut } from '@/auth';
 

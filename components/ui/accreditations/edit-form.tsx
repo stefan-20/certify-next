@@ -1,37 +1,48 @@
 'use client';
-import { CustomerField } from '@/app/lib/definitions';
-import Link from 'next/link';
+
+import { CustomerField, AccreditationForm } from '@/lib/definitions';
 import {
+  DocumentIcon,
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
-  DocumentIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { Button } from '@/app/ui/button';
-import createAccreditation from '@/app/lib/actions';
-import { useFormState } from 'react-dom';
-// import Datepicker from 'tailwind-datepicker-react';
-import { DatePicker } from '@/app/components/Datepicker/datepicker';
-import { useState } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-export default function Form({
+import { updateAccreditation } from '@/app/lib/actions';
+import { useFormState } from 'react-dom';
+
+import { DatePicker } from '@/app/components/Datepicker/datepicker';
+
+export default function EditAccreditationForm({
+  accreditation,
   accreditationTypes,
 }: {
+  accreditation: any;
   accreditationTypes: [];
 }) {
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState(createAccreditation, initialState);
-
+  const updateAccreditationWithId = updateAccreditation.bind(
+    null,
+    accreditation.id,
+  );
+  const [state, dispatch] = useFormState(
+    updateAccreditationWithId,
+    initialState,
+  );
   return (
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
+        {/* Customer Name */}
         <div className="mb-4">
           {/* NAME */}
           <label
             htmlFor="accreditation"
             className="mb-2 block text-sm font-medium"
           >
-            Name <span className="text-red-500">*</span>
+            Enter a name <span className="text-red-500">*</span>
           </label>
           <div className="">
             <input
@@ -39,6 +50,7 @@ export default function Form({
               placeholder="Enter a name"
               id="accreditation"
               name="accreditation"
+              defaultValue={accreditation.name}
               className="peer block w-1/4 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               aria-describedby="name-error"
               required={true}
@@ -49,7 +61,7 @@ export default function Form({
             htmlFor="description"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Description
+            Enter a description
           </label>
           <div className="">
             <textarea
@@ -59,6 +71,7 @@ export default function Form({
               placeholder="Enter a description"
               aria-describedby="name-error"
               className="peer block w-1/2 rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={accreditation.description}
             ></textarea>
           </div>
 
@@ -103,14 +116,15 @@ export default function Form({
             htmlFor="accreditationType"
             className="mb-2 mt-4 block text-sm font-medium"
           >
-            Type
+            Select type
           </label>
           <div className="relative">
             <select
               id="accreditationType"
               name="accreditationType"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              placeholder="Select the accreditation type"
+              defaultValue={accreditation.type}
+              placeholder="Select an accreditation type"
               aria-describedby="accreditationType-error"
             >
               <option value="" disabled></option>
@@ -139,12 +153,12 @@ export default function Form({
               htmlFor="valid_from"
               className="mb-2 block text-sm font-medium"
             >
-              Valid from <span className="text-red-500">*</span>
+              Valid from
             </label>
             <div>
               <DatePicker
                 id={'valid_from'}
-                defaultDate={new Date()}
+                defaultDate={new Date(accreditation.valid_on!)}
               ></DatePicker>
             </div>
           </div>
@@ -156,7 +170,14 @@ export default function Form({
               Valid until
             </label>
             <div>
-              <DatePicker id={'valid_until'} defaultDate={null}></DatePicker>
+              <DatePicker
+                id={'valid_until'}
+                defaultDate={
+                  accreditation.valid_until
+                    ? new Date(accreditation.valid_until)
+                    : null
+                }
+              ></DatePicker>
             </div>
           </div>
         </div>
@@ -179,7 +200,7 @@ export default function Form({
         >
           Cancel
         </Link>
-        <Button type="submit">Create Accreditation</Button>
+        <Button type="submit">Update Accreditation</Button>
       </div>
     </form>
   );
