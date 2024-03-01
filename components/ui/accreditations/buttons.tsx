@@ -41,7 +41,7 @@ export function ViewAccreditation({ id }: { id: string }) {
   );
 }
 
-import { deleteAccreditation, transactAccreditation } from '@/app/lib/actions';
+import { deleteAccreditation, transactAccreditation } from '@/lib/actions';
 
 export function DeleteAccreditation({ id }: { id: string }) {
   const deleteAccreditationWithId = deleteAccreditation.bind(null, id);

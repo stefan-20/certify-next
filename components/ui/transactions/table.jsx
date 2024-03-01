@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { UpdateAccreditation } from '@/components/ui/accreditations/buttons';
 import { NotifyTransaction, CancleTransaction } from './buttons';
-import { fetchFilteredTransactions } from '@/app/lib/data';
+import { fetchFilteredTransactions } from '@/lib/data';
 import TransactionStatus from './status';
 
 // type Transaction = {

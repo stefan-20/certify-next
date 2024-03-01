@@ -1,6 +1,6 @@
 import Form from '@/components/ui/accreditations/create-form';
 import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
-import { fetchAccreditationTypes } from '@/app/lib/data';
+import { fetchAccreditationTypes } from '@/lib/data';
 
 export default async function Page() {
   const accreditationTypes = await fetchAccreditationTypes();

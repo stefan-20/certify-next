@@ -8,10 +8,10 @@ import {
   DocumentIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
-import { createTransaction } from '@/app/lib/actions';
+import { createTransaction } from '@/lib/actions';
 import { useFormState } from 'react-dom';
 // import Datepicker from 'tailwind-datepicker-react';
-import { DatePicker } from '@/app/components/Datepicker/datepicker';
+import { DatePicker } from '@/components/Datepicker/datepicker';
 import { useState } from 'react';
 
 import { Switch } from '@nextui-org/react';

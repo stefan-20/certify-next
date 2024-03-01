@@ -1,6 +1,6 @@
 'use server';
 import { lusitana } from '../fonts';
-import { fetchUsers } from '@/app/lib/data';
+import { fetchUsers } from '@/lib/data';
 import Select from 'react-select';
 
 export function UserSelect() {

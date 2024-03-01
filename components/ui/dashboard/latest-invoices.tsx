@@ -2,8 +2,8 @@
 // import clsx from 'clsx';
 // import Image from 'next/image';
 // import { lusitana } from '@/components/ui/fonts';
-// import { LatestInvoice } from '@/app/lib/definitions';
-// import { fetchLatestInvoices } from '@/app/lib/data';
+// import { LatestInvoice } from '@/lib/definitions';
+// import { fetchLatestInvoices } from '@/lib/data';
 // export default async function LatestInvoices() {
 //   const latestInvoices = await fetchLatestInvoices();
 //   return (

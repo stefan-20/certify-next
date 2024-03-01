@@ -3,7 +3,7 @@ import { lusitana } from '@/components/ui/fonts';
 // import Search from '@/components/ui/search';
 import { ValidateUser } from '@/components/ui/validation/buttons';
 import { useEffect, useState } from 'react';
-import { fetchUsers } from '@/app/lib/data';
+import { fetchUsers } from '@/lib/data';
 // import { UserSelect } from '@/components/ui/validation/select';
 import Select from 'react-select';
 

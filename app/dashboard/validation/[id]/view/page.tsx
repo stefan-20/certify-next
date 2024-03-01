@@ -3,7 +3,7 @@ import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
 import {
   fetchAccreditationTypes,
   fetchValidationAccreditationsByUserID,
-} from '@/app/lib/data';
+} from '@/lib/data';
 // import { notFound } from 'next/navigation';
 import ValidationTable from '@/components/ui/validation/table';
 

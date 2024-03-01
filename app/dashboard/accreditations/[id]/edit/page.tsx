@@ -1,7 +1,7 @@
 import Form from '@/components/ui/accreditations/edit-form';
 import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
-import { fetchAccreditationTypes } from '@/app/lib/data';
-import { fetchAccreditationById } from '@/app/lib/data';
+import { fetchAccreditationTypes } from '@/lib/data';
+import { fetchAccreditationById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
 export default async function Page({ params }: { params: { id: string } }) {

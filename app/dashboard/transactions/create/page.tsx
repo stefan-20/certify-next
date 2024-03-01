@@ -1,6 +1,6 @@
 import Form from '@/components/ui/transactions/create-form';
 import Breadcrumbs from '@/components/ui/accreditations/breadcrumbs';
-import { fetchNontransactedAccreditations, fetchUsers } from '@/app/lib/data';
+import { fetchNontransactedAccreditations, fetchUsers } from '@/lib/data';
 import { Suspense } from 'react';
 import { AccreditationsTableSkeleton } from '@/components/ui/skeletons';
 export default async function Page() {

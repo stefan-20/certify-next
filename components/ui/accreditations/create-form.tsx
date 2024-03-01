@@ -8,10 +8,10 @@ import {
   DocumentIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui/button';
-import createAccreditation from '@/app/lib/actions';
+import createAccreditation from '@/lib/actions';
 import { useFormState } from 'react-dom';
 // import Datepicker from 'tailwind-datepicker-react';
-import { DatePicker } from '@/app/components/Datepicker/datepicker';
+import { DatePicker } from '@/components/Datepicker/datepicker';
 import { useState } from 'react';
 
 export default function Form({

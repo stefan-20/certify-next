@@ -11,10 +11,10 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-import { updateAccreditation } from '@/app/lib/actions';
+import { updateAccreditation } from '@/lib/actions';
 import { useFormState } from 'react-dom';
 
-import { DatePicker } from '@/app/components/Datepicker/datepicker';
+import { DatePicker } from '@/components/Datepicker/datepicker';
 
 export default function EditAccreditationForm({
   accreditation,

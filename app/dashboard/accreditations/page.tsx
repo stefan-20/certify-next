@@ -6,7 +6,7 @@ import { lusitana } from '@/components/ui/fonts';
 import { AccreditationsTableSkeleton } from '@/components/ui/skeletons';
 import { Suspense } from 'react';
 
-import { fetchInvoicesPages } from '@/app/lib/data';
+import { fetchInvoicesPages } from '@/lib/data';
 
 export default async function Page({
   searchParams,

@@ -5,7 +5,7 @@ import {
   TransactAccreditation,
 } from '@/components/ui/accreditations/buttons';
 import LastTransactionStatus from '@/components/ui/accreditations/status';
-import { fetchFilteredAccreditations } from '@/app/lib/data';
+import { fetchFilteredAccreditations } from '@/lib/data';
 
 export default async function AccreditationsTable({
   query,
